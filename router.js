@@ -1,6 +1,5 @@
 
-const fs = require('fs'),
-    multer = require('multer'),
+const multer = require('multer'),
     mimeTypes = require('mime-types'),
     uuid = require('uuid'),
     _ = require('lodash'),
@@ -8,7 +7,7 @@ const fs = require('fs'),
     pusher = require('pusher-google-drive');
 
 const SERVICE_USER = process.env.SERVICE_USER;
-const SERVICE_KEY = fs.readFileSync(process.env.SERVICE_KEY_FILE);
+const SERVICE_KEY = process.env.SERVICE_KEY;
 const SCOPES = [pusher.Services.Token.SCOPES.FILE, pusher.Services.Token.SCOPES.META];
 
 const LEGAL_IMAGE_TYPES = [
