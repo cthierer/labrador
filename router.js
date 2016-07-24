@@ -20,6 +20,36 @@ function isImage (file) {
     return LEGAL_IMAGE_TYPES.indexOf(file.mimetype) >= 0;
 }
 
+function isNotEmptyStr (str) {
+    return str && _.isString(str) && !_.isEmpty(str);
+}
+
+function buildDescription (message, submitter, email) {
+    var description = isNotEmptyStr(message) ? message : "";
+
+    if (isNotEmptyStr(submitter) || isNotEmptyStr(email)) {
+        if (!_.isEmpty(description)) {
+            description += "\n(Submitted by ";
+        }
+
+        if (isNotEmptyStr(submitter)) {
+            description += submitter;
+
+            if (isNotEmptyStr(email)) {
+                description += " ";
+            }
+        }
+
+        if (isNotEmptyStr(email)) {
+            description += "<" + email + ">";
+        }
+
+        description += ")";
+    }
+
+    return description;
+}
+
 var upload = multer({
     fileFilter: function (req, file, cb) {
         cb(null, isImage(file));
@@ -36,13 +66,13 @@ router.get('/', function (req, res, next) {
 
 router.post('/images/:project', upload.array('image'), function (req, res, next) {
     var project = req.params.project,
-        submitter = req.body.name || "",
+        submitter = req.body.submitter || "",
         email = req.body.email || "",
         message = req.body.message || "";
 
     var properties = {
             "parents": [ project ],
-            "description": message + "\n(Submitted by " + submitter + " <" + email + ">)",
+            "description": buildDescription(message, submitter, email),
             "properties": {
                 "submitter": submitter,
                 "email": email
