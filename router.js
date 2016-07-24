@@ -28,6 +28,12 @@ var upload = multer({
     }
 });
 
+router.get('/', function (req, res, next) {
+    res.status(200).send({
+        "status": "ok"
+    });
+});
+
 router.post('/images/:project', upload.array('image'), function (req, res, next) {
     var project = req.params.project,
         submitter = req.body.name || "",
