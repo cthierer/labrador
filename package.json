@@ -15,5 +15,14 @@
   "bugs": {
     "url": "https://github.com/cthierer/labrador/issues"
   },
-  "homepage": "https://github.com/cthierer/labrador#readme"
+  "homepage": "https://github.com/cthierer/labrador#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "lodash": "^4.13.1",
+    "mime-types": "^2.1.11",
+    "multer": "^1.1.0",
+    "pusher-google-drive": "git+https://github.com/cthierer/pusher-google-drive.git",
+    "uuid": "^2.0.2"
+  }
 }

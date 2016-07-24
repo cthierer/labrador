@@ -38,3 +38,7 @@ jspm_packages
 
 # Test files
 test.js
+test.html
+
+# keys
+*.key
