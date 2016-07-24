@@ -11,14 +11,20 @@ const SERVICE_USER = process.env.SERVICE_USER;
 const SERVICE_KEY = fs.readFileSync(process.env.SERVICE_KEY_FILE);
 const SCOPES = [pusher.Services.Token.SCOPES.FILE, pusher.Services.Token.SCOPES.META];
 
-function isImage (fileBuffer) {
-    // TODO implement
-    return true;
+const LEGAL_IMAGE_TYPES = [
+    mimeTypes.types['png'],
+    mimeTypes.types['jpg'],
+    mimeTypes.types['gif'],
+    mimeTypes.types['tif']
+];
+
+function isImage (file) {
+    return LEGAL_IMAGE_TYPES.indexOf(file.mimetype) >= 0;
 }
 
 var upload = multer({
     fileFilter: function (req, file, cb) {
-        cb(null, isImage(file.buffer));
+        cb(null, isImage(file));
     }
 });
 
