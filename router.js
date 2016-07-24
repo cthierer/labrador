@@ -4,11 +4,10 @@ const multer = require('multer'),
     uuid = require('uuid'),
     _ = require('lodash'),
     router = require('express').Router(),
-    pusher = require('pusher-google-drive');
+    GoogleDrivePusher = require('pusher-google-drive');
 
 const SERVICE_USER = process.env.SERVICE_USER;
 const SERVICE_KEY = process.env.SERVICE_KEY;
-const SCOPES = [pusher.Services.Token.SCOPES.FILE, pusher.Services.Token.SCOPES.META];
 
 const LEGAL_IMAGE_TYPES = [
     mimeTypes.types['png'],
@@ -27,6 +26,8 @@ var upload = multer({
     }
 });
 
+var pusher = new GoogleDrivePusher(SERVICE_USER, SERVICE_KEY);
+
 router.get('/', function (req, res, next) {
     res.status(200).send({
         "status": "ok"
@@ -39,37 +40,34 @@ router.post('/images/:project', upload.array('image'), function (req, res, next)
         email = req.body.email || "",
         message = req.body.message || "";
 
-    pusher.Services.Token.getToken(SERVICE_USER, SCOPES, SERVICE_KEY).then(function (token) {
-        var properties = {
-                "parents": [ project ],
-                "description": message + "\n(Submitted by " + submitter + " <" + email + ">)",
-                "properties": {
-                    "submitter": submitter,
-                    "email": email
-                }
-            },
-            promises = [];
+    var properties = {
+            "parents": [ project ],
+            "description": message + "\n(Submitted by " + submitter + " <" + email + ">)",
+            "properties": {
+                "submitter": submitter,
+                "email": email
+            }
+        },
+        promises = [];
 
-        for (var i = 0; i < req.files.length; i++) {
-            var file = req.files[i],
-                fileProperties = _.extend(properties, {
-                    "name": uuid.v4() + "." + mimeTypes.extension(file.mimetype)
-                });
-
-            promises.push(pusher.Services.File.upload(file.buffer,
-                file.mimetype, fileProperties, token));
-        }
-
-        Promise.all(promises).then(function (results) {
-            res.status(200).send({
-                'status': 'ok',
-                'count': promises.length,
-                'files': results
+    for (var i = 0; i < req.files.length; i++) {
+        var file = req.files[i],
+            fileProperties = _.extend(properties, {
+                "name": uuid.v4() + "." + mimeTypes.extension(file.mimetype)
             });
-            next();
-        }).catch(function (err) {
-            next(err);
+
+        promises.push(pusher.uploadFile(file.buffer, file.mimetype, fileProperties));
+    }
+
+    Promise.all(promises).then(function (results) {
+        res.status(200).send({
+            'status': 'ok',
+            'count': promises.length,
+            'files': results
         });
+        next();
+    }).catch(function (err) {
+        next(err);
     });
 });
 
