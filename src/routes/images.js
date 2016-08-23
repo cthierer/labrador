@@ -4,12 +4,9 @@ const mimeTypes = require('mime-types');
 const router = require('express').Router();
 const uuid = require('uuid');
 const _ = require('lodash');
-const GoogleDrivePusher = require('pusher-google-drive');
+const GoogleClientFactory = require('../services').GoogleClientFactory;
 
-const SERVICE_USER = process.env.SERVICE_USER;
-const SERVICE_KEY = process.env.SERVICE_KEY;
-
-const pusher = new GoogleDrivePusher(SERVICE_USER, SERVICE_KEY);
+const pusher = GoogleClientFactory.getClient()
 
 const LEGAL_IMAGE_TYPES = [
     mimeTypes.types['png'],

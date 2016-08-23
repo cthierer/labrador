@@ -1,4 +1,5 @@
 
 module.exports = {
-    Images: require('./images')
+    Images: require('./images'),
+    Posts: require('./posts')
 }
