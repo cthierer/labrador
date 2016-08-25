@@ -8,7 +8,7 @@ router.get('/', function (req, res, next) {
     });
 });
 
-router.use('/images', app.Routes.Images);
+// router.use('/images', app.Routes.Images);
 router.use('/posts', app.Routes.Posts);
 
 module.exports = router;
