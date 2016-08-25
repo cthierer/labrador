@@ -69,8 +69,7 @@ router.post('/:project', (req, res, next) => {
       'count': result.updates.updatedRows,
       'post': formatPost(data)
     })
-    next()
-  }).catch(next)
+  }).then(next).catch(next)
 })
 
 router.get('/:project', (req, res, next) => {
@@ -87,18 +86,18 @@ router.get('/:project', (req, res, next) => {
       'count': result.data.length,
       'posts': result.data
     })
-    next()
-  })
+  }).then(next).catch(next)
 })
 
 router.param('project', (req, res, next, project) => {
-  const projectConfig = config.get(`Projects.${project}`)
+  const projects = config.get('Projects')
 
-  if (!projectConfig) {
+  if (!projects[project]) {
+    res.status(404)
     return next(new Error(`Invalid project: ${project}`))
   }
 
-  req.project = projectConfig
+  req.project = projects[project]
 
   next()
 })
