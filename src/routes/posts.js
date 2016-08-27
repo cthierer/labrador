@@ -33,12 +33,16 @@ function toBoolean (value) {
   }
 }
 
+function hasMessage (cell) {
+    const message = cell[CELL_MESSAGE]
+    return typeof message === 'string' && message.trim() !== ''
+}
+
 function formatPost (cell) {
   const post = {}
 
   post[KEY_MESSAGE] = cell[CELL_MESSAGE]
   post[KEY_AUTHOR] = cell[CELL_AUTHOR]
-  post[KEY_AUTHOR_EMAIL] = cell[CELL_AUTHOR_EMAIL]
   post[KEY_DATE_SUBMITTED] = cell[CELL_DATE_SUBMITTED]
   post[KEY_PUBLISHED] = toBoolean(cell[CELL_PUBLISHED])
 
@@ -46,7 +50,7 @@ function formatPost (cell) {
 }
 
 function filterPublished (cell) {
-  return toBoolean(cell[CELL_PUBLISHED])
+  return toBoolean(cell[CELL_PUBLISHED]) && hasMessage(cell)
 }
 
 router.post('/:project', (req, res, next) => {
@@ -84,7 +88,7 @@ router.get('/:project', (req, res, next) => {
     res.status(200).send({
       'status': 'ok',
       'count': result.data.length,
-      'posts': result.data
+      'posts': result.data.reverse()
     })
   }).then(next).catch(next)
 })
